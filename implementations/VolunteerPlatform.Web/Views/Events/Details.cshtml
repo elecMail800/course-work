@@ -1,0 +1,153 @@
+@model VolunteerPlatform.Web.Models.Event
+
+@{
+    ViewData["Title"] = "Event Details";
+}
+
+<h1>Event Details</h1>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<!-- Картинка события -->
+@if (!string.IsNullOrEmpty(Model.ImageUrl))
+{
+    <div class="text-center mb-4">
+        <img src="@Model.ImageUrl" class="img-fluid rounded" alt="@Model.Title" style="max-height: 400px;">
+    </div>
+}
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Title)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+        
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.EventDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Model.EventDate.ToString("MMMM dd, yyyy hh:mm tt")
+        </dd>
+        
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Location)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Location)
+        </dd>
+        
+        <dt class="col-sm-2">
+            Participants
+        </dt>
+        <dd class="col-sm-10">
+            @Model.Registrations.Count / @Model.MaxParticipants
+            @if (Model.Registrations.Count >= Model.MaxParticipants)
+            {
+                <span class="badge bg-danger">Full</span>
+            }
+            else
+            {
+                <span class="badge bg-success">@(Model.MaxParticipants - Model.Registrations.Count) spots left</span>
+            }
+        </dd>
+    </dl>
+</div>
+
+<!-- Кнопки регистрации -->
+<div class="mb-4">
+    @if (ViewBag.IsRegistered)
+    {
+        <form asp-action="Unregister" method="post">
+            <input type="hidden" name="id" value="@Model.Id" />
+            <button type="submit" class="btn btn-warning">Unregister from Event</button>
+        </form>
+    }
+    else
+    {
+        <form asp-action="Register" method="post">
+            <input type="hidden" name="id" value="@Model.Id" />
+            <button type="submit" class="btn btn-success" 
+                    @(Model.Registrations.Count >= Model.MaxParticipants ? "disabled" : "")>
+                Register for Event
+            </button>
+            @if (Model.Registrations.Count >= Model.MaxParticipants)
+            {
+                <small class="text-muted d-block">Event is full</small>
+            }
+        </form>
+    }
+</div>
+
+<!-- Список участников -->
+@if (Model.Registrations.Any())
+{
+    <div class="mt-4">
+        <h4>Registered Participants (@Model.Registrations.Count)</h4>
+        <div class="row">
+            @foreach (var registration in Model.Registrations)
+            {
+                <div class="col-md-6 mb-2">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">
+                                @if (!string.IsNullOrEmpty(registration.User.FullName))
+                                {
+                                    @registration.User.FullName
+                                }
+                                else
+                                {
+                                    @registration.User.UserName
+                                }
+                            </h6>
+                            <small class="text-muted">
+                                Registered: @registration.RegistrationDate.ToString("MMM dd, yyyy")
+                            </small>
+                            @if (!string.IsNullOrEmpty(registration.Notes))
+                            {
+                                <p class="card-text mt-2">@registration.Notes</p>
+                            }
+                            <!-- Админ может видеть email -->
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <small class="text-muted d-block">Email: @registration.User.Email</small>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        No participants registered yet.
+    </div>
+}
+
+<div class="mt-3">
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+    }
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</div>

@@ -1,0 +1,230 @@
+@model PaginatedList<VolunteerPlatform.Web.Models.Event>
+
+@{
+    ViewData["Title"] = "Events";
+    var isAdmin = User.IsInRole("Admin");
+    var isAuthenticated = User.Identity.IsAuthenticated;
+}
+
+<h1>Events</h1>
+
+<!-- Форма поиска и фильтрации -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form asp-action="Index" method="get" class="row g-3">
+            <div class="col-md-5">
+                <div class="input-group">
+                    <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" 
+                           class="form-control" placeholder="Search by title or description..." />
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Search
+                    </button>
+                </div>
+            </div>
+            
+            <div class="col-md-5">
+                <div class="input-group">
+                    <input type="text" name="locationFilter" value="@ViewData["LocationFilter"]" 
+                           class="form-control" placeholder="Filter by location..." />
+                    <button type="submit" class="btn btn-outline-secondary">
+                        Filter
+                    </button>
+                </div>
+            </div>
+            
+            <div class="col-md-2">
+                <a asp-action="Index" class="btn btn-outline-danger w-100">Clear Filters</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Панель сортировки -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <span class="text-muted">
+            @Model.TotalCount events found • Page @Model.PageIndex of @Model.TotalPages
+        </span>
+    </div>
+    
+    <div class="btn-group" role="group">
+        <span class="me-2 align-self-center">Sort by:</span>
+        <a asp-action="Index" 
+           asp-route-sortOrder="@ViewData["TitleSortParm"]"
+           asp-route-currentFilter="@ViewData["CurrentFilter"]"
+           asp-route-locationFilter="@ViewData["LocationFilter"]"
+           class="btn btn-outline-secondary @(ViewData["TitleSortParm"].ToString() == "title_desc" ? "active" : "")">
+            Title @(ViewData["TitleSortParm"].ToString() == "title_desc" ? "▼" : "▲")
+        </a>
+        <a asp-action="Index" 
+           asp-route-sortOrder="@ViewData["DateSortParm"]"
+           asp-route-currentFilter="@ViewData["CurrentFilter"]"
+           asp-route-locationFilter="@ViewData["LocationFilter"]"
+           class="btn btn-outline-secondary @(ViewData["DateSortParm"].ToString() == "date_desc" ? "active" : "")">
+            Date @(ViewData["DateSortParm"].ToString() == "date_desc" ? "▼" : "▲")
+        </a>
+        <a asp-action="Index" 
+           asp-route-sortOrder="@ViewData["LocationSortParm"]"
+           asp-route-currentFilter="@ViewData["CurrentFilter"]"
+           asp-route-locationFilter="@ViewData["LocationFilter"]"
+           class="btn btn-outline-secondary @(ViewData["LocationSortParm"].ToString() == "location_desc" ? "active" : "")">
+            Location @(ViewData["LocationSortParm"].ToString() == "location_desc" ? "▼" : "▲")
+        </a>
+        <a asp-action="Index" 
+           asp-route-sortOrder="@ViewData["ParticipantsSortParm"]"
+           asp-route-currentFilter="@ViewData["CurrentFilter"]"
+           asp-route-locationFilter="@ViewData["LocationFilter"]"
+           class="btn btn-outline-secondary @(ViewData["ParticipantsSortParm"].ToString() == "participants_desc" ? "active" : "")">
+            Participants @(ViewData["ParticipantsSortParm"].ToString() == "participants_desc" ? "▼" : "▲")
+        </a>
+    </div>
+</div>
+
+@if (isAdmin)
+{
+    <p>
+        <a asp-action="Create" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Create New Event
+        </a>
+    </p>
+}
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        No events found matching your criteria.
+        @if (isAdmin)
+        {
+            <a asp-action="Create">Create the first event</a>
+        }
+    </div>
+}
+
+<!-- Список событий -->
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                @if (!string.IsNullOrEmpty(item.ImageUrl))
+                {
+                    <img src="@item.ImageUrl" class="card-img-top" alt="@item.Title" 
+                         style="height: 200px; object-fit: cover;">
+                }
+                else
+                {
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+                         style="height: 200px;">
+                        <i class="bi bi-calendar-event text-muted" style="font-size: 3rem;"></i>
+                    </div>
+                }
+                
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title mb-0">@item.Title</h5>
+                        <span class="badge bg-info">
+                            @item.Registrations?.Count / @item.MaxParticipants
+                        </span>
+                    </div>
+                    
+                    <p class="card-text flex-grow-1">
+                        @if (item.Description.Length > 100)
+                        {
+                            @item.Description.Substring(0, 100)<text>...</text>
+                        }
+                        else
+                        {
+                            @item.Description
+                        }
+                    </p>
+                    
+                    <div class="mt-auto">
+                        <div class="mb-2">
+                            <small class="text-muted">
+                                <i class="bi bi-calendar"></i> 
+                                @item.EventDate.ToString("MMM dd, yyyy")
+                            </small>
+                            <br>
+                            <small class="text-muted">
+                                <i class="bi bi-geo-alt"></i> @item.Location
+                            </small>
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <a asp-action="Details" asp-route-id="@item.Id" 
+                               class="btn btn-outline-primary btn-sm flex-grow-1">
+                                <i class="bi bi-eye"></i> Details
+                            </a>
+                            
+                            @if (isAdmin)
+                            {
+                                <a asp-action="Edit" asp-route-id="@item.Id" 
+                                   class="btn btn-outline-warning btn-sm">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.Id" 
+                                   class="btn btn-outline-danger btn-sm">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-footer bg-transparent">
+                    <small class="text-muted">
+                        Created: @item.CreatedAt.ToString("MMM dd, yyyy")
+                        @if (item.UpdatedAt.HasValue)
+                        {
+                            <text> • Updated: @item.UpdatedAt.Value.ToString("MMM dd, yyyy")</text>
+                        }
+                    </small>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Пагинация -->
+@if (Model.TotalPages > 1)
+{
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
+                <a class="page-link" 
+                   asp-action="Index"
+                   asp-route-sortOrder="@ViewData["CurrentSort"]"
+                   asp-route-pageNumber="@(Model.PageIndex - 1)"
+                   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+                   asp-route-locationFilter="@ViewData["LocationFilter"]">
+                    Previous
+                </a>
+            </li>
+            
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                    <a class="page-link" 
+                       asp-action="Index"
+                       asp-route-sortOrder="@ViewData["CurrentSort"]"
+                       asp-route-pageNumber="@i"
+                       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+                       asp-route-locationFilter="@ViewData["LocationFilter"]">
+                        @i
+                    </a>
+                </li>
+            }
+            
+            <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
+                <a class="page-link" 
+                   asp-action="Index"
+                   asp-route-sortOrder="@ViewData["CurrentSort"]"
+                   asp-route-pageNumber="@(Model.PageIndex + 1)"
+                   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+                   asp-route-locationFilter="@ViewData["LocationFilter"]">
+                    Next
+                </a>
+            </li>
+        </ul>
+    </nav>
+}

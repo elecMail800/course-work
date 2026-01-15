@@ -1,0 +1,53 @@
+@model IEnumerable<VolunteerPlatform.Web.Models.Cause>
+
+@{
+    ViewData["Title"] = "Causes";
+    var isAdmin = User.IsInRole("Admin");
+}
+
+<h1>Causes</h1>
+
+@if (isAdmin)
+{
+    <p>
+        <a asp-action="Create" class="btn btn-success">Create New Cause</a>
+    </p>
+}
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">@item.Name</h5>
+                    <p class="card-text">@item.Description</p>
+                    
+                    <div class="mb-3">
+                        <span class="badge bg-info">@item.Organization?.Name</span>
+                        <span class="badge bg-secondary ms-1">
+                            @item.StartDate.ToString("MMM dd, yyyy") - @item.EndDate.ToString("MMM dd, yyyy")
+                        </span>
+                    </div>
+                    
+                    <div class="mb-2">
+                        <small class="text-muted">
+                            <i class="bi bi-calendar-event"></i> Events: @item.Events.Count
+                        </small>
+                        <small class="text-muted ms-3">
+                            <i class="bi bi-chat-left-text"></i> Feedbacks: @item.Feedbacks.Count
+                        </small>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm">Details</a>
+                    @if (isAdmin)
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Delete</a>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>

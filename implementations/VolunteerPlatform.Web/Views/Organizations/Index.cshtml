@@ -1,0 +1,42 @@
+@model IEnumerable<VolunteerPlatform.Web.Models.Organization>
+
+@{
+    ViewData["Title"] = "Organizations";
+    var isAdmin = User.IsInRole("Admin");
+}
+
+<h1>Organizations</h1>
+
+@if (isAdmin)
+{
+    <p>
+        <a asp-action="Create" class="btn btn-success">Create New</a>
+    </p>
+}
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">@item.Name</h5>
+                    <p class="card-text">
+                        <strong>Address:</strong> @item.Address<br>
+                        <strong>Email:</strong> @item.Email<br>
+                        <strong>Phone:</strong> @item.Phone<br>
+                        <strong>Causes:</strong> @item.Causes.Count
+                    </p>
+                </div>
+                <div class="card-footer">
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm">Details</a>
+                    @if (isAdmin)
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Delete</a>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>

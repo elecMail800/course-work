@@ -1,0 +1,45 @@
+@model IEnumerable<VolunteerPlatform.Web.Models.ApplicationUser>
+
+@{
+    ViewData["Title"] = "Users List";
+    var isAdmin = User.IsInRole("Admin");
+}
+
+<h1>Users</h1>
+
+@if (isAdmin)
+{
+    <p>
+        <a asp-action="Create">Create New User</a>
+    </p>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var user in Model)
+    {
+        <tr>
+            <td>@user.FirstName</td>
+            <td>@user.LastName</td>
+            <td>@user.Email</td>
+            <td>
+                <a asp-action="Details" asp-route-id="@user.Id">Details</a> |
+                @if (isAdmin)
+                {
+                    <a asp-action="Edit" asp-route-id="@user.Id">Edit</a> 
+                    <text>|</text>
+                    <a asp-action="Delete" asp-route-id="@user.Id">Delete</a>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

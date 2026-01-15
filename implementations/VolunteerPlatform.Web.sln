@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36109.1 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VolunteerPlatform.Web", "VolunteerPlatform.Web\VolunteerPlatform.Web.csproj", "{7E0630F3-020B-4BB5-B6DB-43305ABC470B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7E0630F3-020B-4BB5-B6DB-43305ABC470B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E0630F3-020B-4BB5-B6DB-43305ABC470B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E0630F3-020B-4BB5-B6DB-43305ABC470B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E0630F3-020B-4BB5-B6DB-43305ABC470B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7AB9DCC9-03DD-4CA7-869F-1B4591EEF2B8}
+	EndGlobalSection
+EndGlobal

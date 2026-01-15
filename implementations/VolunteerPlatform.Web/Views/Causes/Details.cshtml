@@ -1,0 +1,64 @@
+@model VolunteerPlatform.Web.Models.Cause
+
+@{
+    ViewData["Title"] = "Cause Details";
+}
+
+<h1>@Model.Name</h1>
+
+<div>
+    <dl class="row">
+        <dt class="col-sm-2">Description</dt>
+        <dd class="col-sm-10">@Model.Description</dd>
+        
+        <dt class="col-sm-2">Organization</dt>
+        <dd class="col-sm-10">
+            <a asp-controller="Organizations" asp-action="Details" asp-route-id="@Model.OrganizationId">
+                @Model.Organization?.Name
+            </a>
+        </dd>
+        
+        <dt class="col-sm-2">Start Date</dt>
+        <dd class="col-sm-10">@Model.StartDate.ToString("MMMM dd, yyyy")</dd>
+        
+        <dt class="col-sm-2">End Date</dt>
+        <dd class="col-sm-10">@Model.EndDate.ToString("MMMM dd, yyyy")</dd>
+        
+        <dt class="col-sm-2">Duration</dt>
+        <dd class="col-sm-10">@((Model.EndDate - Model.StartDate).Days) days</dd>
+    </dl>
+</div>
+
+<h4>Events (@Model.Events.Count)</h4>
+@if (Model.Events.Any())
+{
+    <div class="row">
+        @foreach (var ev in Model.Events.Take(3))
+        {
+            <div class="col-md-4 mb-2">
+                <div class="card">
+                    <div class="card-body">
+                        <h6>@ev.Title</h6>
+                        <small>@ev.EventDate.ToString("MMM dd") • @ev.Location</small>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    @if (Model.Events.Count > 3)
+    {
+        <p>... and @(Model.Events.Count - 3) more events</p>
+    }
+}
+else
+{
+    <p>No events for this cause yet.</p>
+}
+
+<div class="mt-3">
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+    }
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</div>
