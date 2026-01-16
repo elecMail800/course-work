@@ -1,6 +1,6 @@
 # Volunteer Platform Project
 ## Student Information
-- Name: Олкесандр Карпеленя
+
 - Faculty Number: 2301261038
 
 
