@@ -3,8 +3,6 @@
 - Name: Олкесандр Карпеленя
 - Faculty Number: 2301261038
 
-## Project Description
-Web application for managing volunteer events with CRUD operations, authentication, and three-level access control.
 
 ## Technologies
 - ASP.NET Core MVC (.NET 8)
